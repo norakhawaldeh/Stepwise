@@ -21,7 +21,7 @@ export default function App() {
     if (screen === 'splash') {
       const timer = setTimeout(() => {
         setScreen('login');
-      }, 2000);
+      }, 5500);
       return () => clearTimeout(timer);
     }
   }, [screen]);

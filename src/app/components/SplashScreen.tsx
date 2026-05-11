@@ -1,43 +1,58 @@
-export function SplashScreen() {
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
+import AnimatedLogo from './AnimatedLogo'
+
+export default function SplashScreen() {
+  const navigate = useNavigate()
+  const [fading, setFading] = useState(false)
+
+  useEffect(() => {
+    const fadeTimer = setTimeout(() => setFading(true), 3400)
+    const navTimer  = setTimeout(() => navigate('/login'), 3900)
+    return () => {
+      clearTimeout(fadeTimer)
+      clearTimeout(navTimer)
+    }
+  }, [navigate])
+
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center"
       style={{
-        background: 'linear-gradient(180deg, #1A1F36 0%, #2D2250 100%)',
+        minHeight: '100dvh',
+        backgroundColor: '#0D0F14',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px',
+        transition: 'opacity 0.5s ease',
+        opacity: fading ? 0 : 1,
+        fontFamily: 'system-ui, sans-serif',
       }}
     >
-      <div className="max-w-[390px] mx-auto w-full px-6 text-center">
-        {/* App Name */}
-        <h1 className="text-[36px] font-bold text-white mb-2">
-          Stepwise<sup className="text-[14px]">®</sup>
-        </h1>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+      `}</style>
 
-        {/* Tagline */}
-        <p className="text-[16px] mb-12" style={{ color: '#C8C4E8' }}>
-          Stop panicking. Start doing.
-        </p>
+      <AnimatedLogo />
 
-        {/* Loading Dots */}
-        <div className="flex items-center justify-center gap-2 mb-16">
-          <div
-            className="w-2 h-2 rounded-full animate-pulse"
-            style={{ backgroundColor: '#FF6B4A', animationDelay: '0ms' }}
-          />
-          <div
-            className="w-2 h-2 rounded-full animate-pulse"
-            style={{ backgroundColor: '#FF6B4A', animationDelay: '150ms' }}
-          />
-          <div
-            className="w-2 h-2 rounded-full animate-pulse"
-            style={{ backgroundColor: '#FF6B4A', animationDelay: '300ms' }}
-          />
-        </div>
-
-        {/* Footer */}
-        <p className="text-[13px] absolute bottom-8 left-0 right-0 text-center" style={{ color: '#666' }}>
-          Your AI-powered focus coach.
-        </p>
+      {/* Bottom label */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '44px',
+          color: '#8B909A',
+          fontSize: '0.75rem',
+          letterSpacing: '0.06em',
+          opacity: 0,
+          animation: 'fadeIn 0.5s ease 3.0s forwards',
+        }}
+      >
+        Your AI focus coach
       </div>
     </div>
-  );
+  )
 }

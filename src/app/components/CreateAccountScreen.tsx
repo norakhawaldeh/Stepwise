@@ -32,7 +32,7 @@ export function CreateAccountScreen({ onCreateAccount, onBackToLogin }: CreateAc
             Create account
           </h1>
           <p className="text-[15px]" style={{ color: '#666' }}>
-            Let's get you unstuck.
+          
           </p>
         </div>
 

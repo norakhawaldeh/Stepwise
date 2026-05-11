@@ -113,7 +113,7 @@ export function DarkOnboardingScreen({ onComplete }: DarkOnboardingScreenProps) 
                   border: `1px solid ${workTime === 'night' ? '#00E5A0' : '#242830'}`,
                 }}
               >
-                Night owl
+                Night
               </button>
             </div>
           </div>
