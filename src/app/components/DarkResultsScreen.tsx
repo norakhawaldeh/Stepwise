@@ -1,184 +1,356 @@
-import { useState } from 'react';
-import { ArrowLeft, Lightbulb } from 'lucide-react';
+import { useEffect, useState } from 'react'
+import {
+  ArrowLeft,
+  Trash2,
+  CheckCircle2,
+  Calendar,
+  MoveRight,
+} from 'lucide-react'
 
 interface DarkResultsScreenProps {
-  onStartOver: () => void;
-  onNavigate: (screen: string) => void;
+  onStartOver: () => void
+  onNavigate: (screen: string) => void
+}
+
+type StepTask = {
+  id: string
+  text: string
+  time: string
+  dayId: string
+}
+
+type DayGroup = {
+  id: string
+  title: string
 }
 
 export function DarkResultsScreen({ onStartOver, onNavigate }: DarkResultsScreenProps) {
-  const [checkedTasks, setCheckedTasks] = useState<Set<string>>(new Set());
+  const [assignmentTitle, setAssignmentTitle] = useState('New Assignment')
+  const [days, setDays] = useState<DayGroup[]>([])
 
-  const toggleTask = (taskId: string) => {
-    const newChecked = new Set(checkedTasks);
-    if (newChecked.has(taskId)) {
-      newChecked.delete(taskId);
-    } else {
-      newChecked.add(taskId);
-    }
-    setCheckedTasks(newChecked);
-  };
+  const [tasks, setTasks] = useState<StepTask[]>([])
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [moveOpenId, setMoveOpenId] = useState<string | null>(null)
+  const [added, setAdded] = useState(false)
+  
 
-  const days = [
-    {
-      id: '1',
-      title: 'Today — Research & outline',
-      time: '1h 30m',
-      tasks: [
-        { id: '1-1', name: 'Find and skim 3 sources', time: '30 min' },
-        { id: '1-2', name: 'Write your outline', time: '60 min' },
-      ]
-    },
-    {
-      id: '2',
-      title: 'Day 2 — Writing',
-      time: '1h 45m',
-      tasks: [
-        { id: '2-1', name: 'Write intro + section 1', time: '45 min' },
-        { id: '2-2', name: 'Write sections 2 and 3', time: '60 min' },
-      ]
-    },
-    {
-      id: '3',
-      title: 'Day 3 — Polish',
-      time: '50m',
-      tasks: [
-        { id: '3-1', name: 'Edit and proofread', time: '30 min' },
-        { id: '3-2', name: 'Format and submit', time: '20 min' },
-      ]
-    },
-  ];
+  useEffect(() => {
+    const saved = localStorage.getItem('stepwiseDraftTask')
+    const draft = saved ? JSON.parse(saved) : null
+
+    const title = draft?.title || 'New Assignment'
+    const numDays = Math.min(Math.max(draft?.days || 3, 1), 7)
+
+    setAssignmentTitle(title)
+
+    const startDate = new Date()
+
+    const newDays = Array.from({ length: numDays }, (_, i) => {
+      const date = new Date(startDate)
+      date.setDate(startDate.getDate() + i)
+
+      return {
+        id: `day-${i + 1}`,
+        title: date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+        }),
+      }
+    })
+
+    setDays(newDays)
+
+    const sampleTasks: StepTask[] = [
+      {
+        id: 'task-1',
+        text: draft?.details
+          ? 'Read through the assignment details and highlight what needs to be done.'
+          : 'Figure out what topics you need to study.',
+        time: '20 min',
+        dayId: 'day-1',
+      },
+      {
+        id: 'task-2',
+        text: title.toLowerCase().includes('study')
+          ? 'Review your notes and make a short list of weak spots.'
+          : 'Create a quick outline before starting the main work.',
+        time: '30 min',
+        dayId: 'day-1',
+      },
+      {
+        id: 'task-3',
+        text: title.toLowerCase().includes('study')
+          ? 'Do practice problems without checking answers first.'
+          : 'Complete the first main section of the assignment.',
+        time: '45 min',
+        dayId: newDays[1]?.id || 'day-1',
+      },
+      {
+        id: 'task-4',
+        text: title.toLowerCase().includes('study')
+          ? 'Review mistakes and rewrite the correct steps.'
+          : 'Finish the remaining section and clean up rough parts.',
+        time: '45 min',
+        dayId: newDays[1]?.id || 'day-1',
+      },
+      {
+        id: 'task-5',
+        text: title.toLowerCase().includes('study')
+          ? 'Do a final review and make a mini cheat sheet from memory.'
+          : 'Proofread, format, and submit.',
+        time: '30 min',
+        dayId: newDays[newDays.length - 1]?.id || 'day-1',
+      },
+    ]
+
+    setTasks(sampleTasks)
+  }, [])
+
+  const updateTaskText = (taskId: string, value: string) => {
+    setTasks((prev) =>
+      prev.map((task) => (task.id === taskId ? { ...task, text: value } : task))
+    )
+  }
+
+  const moveTask = (taskId: string, newDayId: string) => {
+    setTasks((prev) =>
+      prev.map((task) => (task.id === taskId ? { ...task, dayId: newDayId } : task))
+    )
+    setMoveOpenId(null)
+  }
+
+  const confirmDelete = () => {
+    if (!deleteId) return
+    setTasks((prev) => prev.filter((task) => task.id !== deleteId))
+    setDeleteId(null)
+  }
+
+  const handleAddToSchedule = () => {
+    localStorage.setItem(
+      'stepwiseSchedule',
+      JSON.stringify({
+        assignmentTitle,
+        days,
+        tasks,
+      })
+    )
+    setAdded(true)
+  }
+
+  if (added) {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: '#0D0F14' }}>
+        <div className="max-w-[430px] mx-auto min-h-screen px-5 flex items-center">
+          <div
+            className="w-full rounded-[26px] p-6 text-center"
+            style={{ backgroundColor: '#161920', border: '1px solid #242830' }}
+          >
+            <CheckCircle2 size={58} color="#00E5A0" className="mx-auto mb-5" />
+
+            <h1 className="text-[26px] font-bold mb-3" style={{ color: '#F0F2F5' }}>
+              Added to schedule
+            </h1>
+
+            <p className="text-[15px] leading-relaxed mb-6" style={{ color: '#A0A5B0' }}>
+              Your plan is saved. You can now view your steps in the schedule.
+            </p>
+
+            <button
+              onClick={() => onNavigate('schedule')}
+              className="w-full py-4 rounded-[18px] font-bold text-[16px]"
+              style={{ backgroundColor: '#00E5A0', color: '#0D0F14' }}
+            >
+              View schedule
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#0D0F14' }}>
-      <div className="flex-1 max-w-[390px] mx-auto w-full px-6 py-12 pb-24">
-        {/* Back Button */}
-        <button
-          onClick={() => onNavigate('home')}
-          className="flex items-center gap-2 mb-6 hover:opacity-70 transition-opacity"
-        >
-          <ArrowLeft size={20} color="#00E5A0" />
-        </button>
+    <div className="min-h-screen relative" style={{ backgroundColor: '#0D0F14' }}>
+      <div className="max-w-[430px] mx-auto h-screen flex flex-col relative">
+        <div className="flex-1 overflow-y-auto px-5 pt-8 pb-28">
+          <button
+            onClick={onStartOver}
+            className="mb-7"
+          >
+            <ArrowLeft size={22} color="#00E5A0" />
+          </button>
 
-        {/* Header */}
-        <h1 className="text-[26px] font-bold mb-6" style={{ color: '#F0F2F5' }}>
-          Your Plan
-        </h1>
+          <div className="mb-6">
+            <p className="text-[12px] font-bold uppercase tracking-[0.16em] mb-2" style={{ color: '#00E5A0' }}>
+              Preview Plan
+            </p>
 
-        {/* Hero Action Card */}
-        <div
-          className="rounded-[20px] p-6 mb-6"
-          style={{ backgroundColor: '#161920', border: '1px solid #242830' }}
-        >
-          <div className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: '#00E5A0' }}>
-            DO THIS RIGHT NOW
+            <h1 className="text-[28px] font-bold mb-2" style={{ color: '#F0F2F5' }}>
+              {assignmentTitle}
+            </h1>
+
+            <p className="text-[14px] leading-relaxed" style={{ color: '#A0A5B0' }}>
+              Edit any step, move it to another day, or delete anything you don’t need.
+            </p>
           </div>
-          <h2 className="text-[20px] font-bold mb-3 leading-tight" style={{ color: '#F0F2F5' }}>
-            Open a blank doc and write your essay title and 3 bullet points.
-          </h2>
-          <p className="text-[13px] italic" style={{ color: '#8B909A' }}>
-            Starting with structure beats starting with research.
-          </p>
-        </div>
 
-        {/* Urgency Meter */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-[14px]" style={{ color: '#8B909A' }}>
-              Urgency
-            </span>
-            <span className="px-3 py-1 rounded-full text-[12px] font-medium" style={{ backgroundColor: '#FFAA5A', color: '#0D0F14' }}>
-              Get moving
-            </span>
-          </div>
-          <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#242830' }}>
-            <div
-              className="h-full rounded-full transition-all"
-              style={{ backgroundColor: '#FFAA5A', width: '55%' }}
-            />
-          </div>
-        </div>
+          <div
+            className="rounded-[22px] p-5 mb-5"
+            style={{ backgroundColor: '#161920', border: '1px solid #242830' }}
+          >
+            {days.map((day, index) => {
+              const dayTasks = tasks.filter((task) => task.dayId === day.id)
 
-        {/* Plan Card */}
-        <div
-          className="rounded-[20px] p-5 mb-6"
-          style={{ backgroundColor: '#161920', border: '1px solid #242830' }}
-        >
-          <h3 className="text-[16px] font-bold mb-5" style={{ color: '#F0F2F5' }}>
-            3-day plan
-          </h3>
-
-          {days.map((day, idx) => (
-            <div
-              key={day.id}
-              className={idx < days.length - 1 ? 'mb-5 pb-5 border-b' : 'mb-5'}
-              style={{ borderColor: '#242830' }}
-            >
-              {/* Day Header */}
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-[14px] font-bold" style={{ color: '#F0F2F5' }}>
-                  {day.title}
-                </span>
-                <span className="px-2.5 py-1 rounded-md text-[12px]" style={{ backgroundColor: '#242830', color: '#8B909A' }}>
-                  {day.time}
-                </span>
-              </div>
-
-              {/* Tasks */}
-              {day.tasks.map((task) => (
+              return (
                 <div
-                  key={task.id}
-                  className="flex items-start gap-3 mb-3 cursor-pointer"
-                  onClick={() => toggleTask(task.id)}
+                  key={day.id}
+                  className={index < days.length - 1 ? 'mb-6 pb-6 border-b' : ''}
+                  style={{ borderColor: '#242830' }}
                 >
-                  <div className="flex-shrink-0 mt-0.5">
-                    <div
-                      className="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all"
-                      style={{
-                        borderColor: checkedTasks.has(task.id) ? '#00E5A0' : '#242830',
-                        backgroundColor: checkedTasks.has(task.id) ? '#00E5A0' : 'transparent',
-                      }}
-                    >
-                      {checkedTasks.has(task.id) && (
-                        <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
-                          <path d="M1 5L4.5 8.5L11 1.5" stroke="#0D0F14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-[14px] mb-1" style={{ color: '#F0F2F5' }}>
-                      {task.name}
-                    </div>
-                    <div className="text-[12px]" style={{ color: '#8B909A' }}>
-                      {task.time}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ))}
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-[16px] font-bold" style={{ color: '#F0F2F5' }}>
+                      {day.title}
+                    </h2>
 
-          {/* Tip Box */}
-          <div className="rounded-xl p-4" style={{ backgroundColor: '#161920' }}>
-            <div className="flex gap-2">
-              <Lightbulb size={16} color="#00E5A0" className="flex-shrink-0 mt-0.5" />
-              <p className="text-[13px] leading-relaxed" style={{ color: '#8B909A' }}>
-                Work in 25-min sprints — your brain performs better this way.
-              </p>
-            </div>
+                    <span className="text-[12px]" style={{ color: '#8B909A' }}>
+                      {dayTasks.length} steps
+                    </span>
+                  </div>
+
+                  {dayTasks.length === 0 && (
+                    <p className="text-[13px] italic" style={{ color: '#8B909A' }}>
+                      No steps here.
+                    </p>
+                  )}
+
+                  {dayTasks.map((task) => (
+                    <div
+                      key={task.id}
+                      className="rounded-[16px] p-3 mb-3 relative"
+                      style={{ backgroundColor: '#0D0F14', border: '1px solid #242830' }}
+                    >
+                      <textarea
+                        value={task.text}
+                        onChange={(e) => updateTaskText(task.id, e.target.value)}
+                        className="w-full resize-none text-[14px] leading-snug focus:outline-none"
+                        style={{
+                          backgroundColor: 'transparent',
+                          color: '#F0F2F5',
+                          minHeight: '48px',
+                        }}
+                      />
+
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-[12px]" style={{ color: '#8B909A' }}>
+                          {task.time}
+                        </span>
+
+                        <div className="flex items-center gap-2">
+                          <div className="relative">
+                            <button
+                              onClick={() => setMoveOpenId(moveOpenId === task.id ? null : task.id)}
+                              className="px-3 py-1.5 rounded-full text-[12px] font-semibold flex items-center gap-1"
+                              style={{ backgroundColor: '#20242D', color: '#A0A5B0' }}
+                            >
+                              <MoveRight size={13} />
+                              Move
+                            </button>
+
+                            {moveOpenId === task.id && (
+                              <div
+                                className="absolute right-0 top-9 z-20 rounded-[14px] overflow-hidden"
+                                style={{
+                                  backgroundColor: '#20242D',
+                                  border: '1px solid #242830',
+                                  minWidth: '130px',
+                                }}
+                              >
+                                {days.map((d) => (
+                                  <button
+                                    key={d.id}
+                                    onClick={() => moveTask(task.id, d.id)}
+                                    className="block w-full text-left px-3 py-2 text-[13px]"
+                                    style={{
+                                      color: d.id === task.dayId ? '#00E5A0' : '#F0F2F5',
+                                    }}
+                                  >
+                                    {d.title}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          <button
+                            onClick={() => setDeleteId(task.id)}
+                            className="w-8 h-8 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: '#20242D' }}
+                          >
+                            <Trash2 size={15} color="#FF6B57" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            })}
           </div>
+
+          <button
+            onClick={handleAddToSchedule}
+            className="w-full py-4 rounded-[18px] font-bold text-[16px] mb-4"
+            style={{ backgroundColor: '#00E5A0', color: '#0D0F14' }}
+          >
+            Add to schedule
+          </button>
+
+          <button
+            onClick={onStartOver}
+            className="w-full py-3 rounded-[18px] text-[14px] underline"
+            style={{ color: '#8B909A' }}
+          >
+            Start over
+          </button>
         </div>
 
-        {/* Start Over Link */}
-        <button
-          onClick={onStartOver}
-          className="text-[14px] underline mx-auto block hover:opacity-70 transition-opacity"
-          style={{ color: '#8B909A' }}
-        >
-          ← Start over
-        </button>
+        {deleteId && (
+          <div
+            className="absolute inset-0 flex items-center justify-center px-6"
+            style={{ backgroundColor: 'rgba(0,0,0,0.62)' }}
+          >
+            <div
+              className="w-full rounded-[22px] p-5"
+              style={{ backgroundColor: '#161920', border: '1px solid #242830' }}
+            >
+              <h2 className="text-[20px] font-bold mb-2" style={{ color: '#F0F2F5' }}>
+                Delete this step?
+              </h2>
+
+              <p className="text-[14px] mb-5" style={{ color: '#A0A5B0' }}>
+                This will remove it from your plan.
+              </p>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeleteId(null)}
+                  className="flex-1 py-3 rounded-[14px] font-bold"
+                  style={{ backgroundColor: '#20242D', color: '#F0F2F5' }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={confirmDelete}
+                  className="flex-1 py-3 rounded-[14px] font-bold"
+                  style={{ backgroundColor: '#FF6B57', color: '#0D0F14' }}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
-  );
+  )
 }
