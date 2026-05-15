@@ -24,34 +24,38 @@ export function DarkCreateAccountScreen({
   const [loading, setLoading] = useState(false)
 
   const handleCreateAccount = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
+  e.preventDefault()
 
-    if (!name.trim()) {
-      setError('Please enter your name.')
-      return
-    }
+  if (loading) return
 
-    if (!email.trim()) {
-      setError('Please enter your email.')
-      return
-    }
+  setError('')
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
-      return
-    }
+  if (!name.trim()) {
+    setError('Please enter your name.')
+    return
+  }
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.')
-      return
-    }
+  if (!email.trim()) {
+    setError('Please enter your email.')
+    return
+  }
 
-    if (!agreedToTerms) {
-      setError('Please agree to the Terms of Service and Privacy Policy.')
-      return
-    }
+  if (password.length < 6) {
+    setError('Password must be at least 6 characters.')
+    return
+  }
 
+  if (password !== confirmPassword) {
+    setError('Passwords do not match.')
+    return
+  }
+
+  if (!agreedToTerms) {
+    setError('Please agree to the Terms of Service and Privacy Policy.')
+    return
+  }
+
+  try {
     setLoading(true)
 
     const { data, error } = await supabase.auth.signUp({
@@ -63,8 +67,6 @@ export function DarkCreateAccountScreen({
         },
       },
     })
-
-    setLoading(false)
 
     if (error) {
       const message = error.message.toLowerCase()
@@ -86,7 +88,22 @@ export function DarkCreateAccountScreen({
       setError(error.message)
       return
     }
+
+    // SUCCESS
+    console.log('Account created:', data)
+
+    // save username locally for now
+    localStorage.setItem('stepwise_username', name)
+
+    // go to onboarding/home
+    onCreateAccount()
+
+  } catch (err) {
+    setError('Something went wrong. Please try again.')
+  } finally {
+    setLoading(false)
   }
+}
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#0D0F14' }}>

@@ -35,76 +35,66 @@ export function DarkResultsScreen({ onStartOver, onNavigate }: DarkResultsScreen
   
 
   useEffect(() => {
-    const saved = localStorage.getItem('stepwiseDraftTask')
-    const draft = saved ? JSON.parse(saved) : null
+  const generated = localStorage.getItem('stepwiseGeneratedPlan')
+  const plan = generated ? JSON.parse(generated) : null
 
-    const title = draft?.title || 'New Assignment'
-    const numDays = Math.min(Math.max(draft?.days || 3, 1), 7)
+  if (!plan) return
 
-    setAssignmentTitle(title)
+  const draft = JSON.parse(
+    localStorage.getItem('stepwiseDraftTask') || '{}'
+  )
 
-    const startDate = new Date()
+  const numDays = Math.min(Math.max(draft?.days || 3, 1), 7)
 
-    const newDays = Array.from({ length: numDays }, (_, i) => {
-      const date = new Date(startDate)
-      date.setDate(startDate.getDate() + i)
+  setAssignmentTitle(plan.assignmentTitle)
 
-      return {
-        id: `day-${i + 1}`,
-        title: date.toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-        }),
-      }
+  const startDate = new Date()
+
+  const newDays = Array.from({ length: numDays }, (_, i) => {
+    const date = new Date(startDate)
+
+    date.setDate(startDate.getDate() + i)
+
+    return {
+      id: `day-${i + 1}`,
+      title: date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+      }),
+    }
+  })
+
+  setDays(newDays)
+
+  const aiTasks: StepTask[] = plan.subtasks.map(
+    (task: any, index: number) => ({
+      id: `task-${index + 1}`,
+
+      text: task.text,
+
+      time: task.time,
+
+      dayId: `day-${Math.min(
+        Math.max(task.dayNumber || 1, 1),
+        numDays
+      )}`,
+
+      completed: false,
     })
+  )
 
-    setDays(newDays)
+  setTasks(aiTasks)
 
-    const sampleTasks: StepTask[] = [
-      {
-        id: 'task-1',
-        text: draft?.details
-          ? 'Read through the assignment details and highlight what needs to be done.'
-          : 'Figure out what topics you need to study.',
-        time: '20 min',
-        dayId: 'day-1',
-      },
-      {
-        id: 'task-2',
-        text: title.toLowerCase().includes('study')
-          ? 'Review your notes and make a short list of weak spots.'
-          : 'Create a quick outline before starting the main work.',
-        time: '30 min',
-        dayId: 'day-1',
-      },
-      {
-        id: 'task-3',
-        text: title.toLowerCase().includes('study')
-          ? 'Do practice problems without checking answers first.'
-          : 'Complete the first main section of the assignment.',
-        time: '45 min',
-        dayId: newDays[1]?.id || 'day-1',
-      },
-      {
-        id: 'task-4',
-        text: title.toLowerCase().includes('study')
-          ? 'Review mistakes and rewrite the correct steps.'
-          : 'Finish the remaining section and clean up rough parts.',
-        time: '45 min',
-        dayId: newDays[1]?.id || 'day-1',
-      },
-      {
-        id: 'task-5',
-        text: title.toLowerCase().includes('study')
-          ? 'Do a final review and make a mini cheat sheet from memory.'
-          : 'Proofread, format, and submit.',
-        time: '30 min',
-        dayId: newDays[newDays.length - 1]?.id || 'day-1',
-      },
-    ]
-
-    setTasks(sampleTasks)
-  }, [])
+  localStorage.setItem(
+    'stepwiseSchedule',
+    JSON.stringify({
+      assignmentTitle: plan.assignmentTitle,
+      days: newDays,
+      tasks: aiTasks,
+      startDate: new Date().toISOString(),
+    })
+  )
+}, [])
 
   const updateTaskText = (taskId: string, value: string) => {
     setTasks((prev) =>
@@ -126,12 +116,23 @@ export function DarkResultsScreen({ onStartOver, onNavigate }: DarkResultsScreen
   }
 
   const handleAddToSchedule = () => {
+    const startDate = new Date()
+    const deadlineDate = new Date(startDate)
+    deadlineDate.setDate(startDate.getDate() + days.length - 1)
+
     localStorage.setItem(
       'stepwiseSchedule',
       JSON.stringify({
         assignmentTitle,
+        startDate: startDate.toISOString(),
+        deadlineDate: deadlineDate.toISOString(),
+        totalDays: days.length,
         days,
-        tasks,
+        tasks: tasks.map((task) => ({
+          ...task,
+          assignmentTitle,
+          completed: false,
+        })),
       })
     )
     setAdded(true)

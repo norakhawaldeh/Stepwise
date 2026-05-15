@@ -91,7 +91,7 @@ export function DarkLoginScreen({ onLogin, onSignUp }: DarkLoginScreenProps) {
           className="ls-logo"
           style={{ marginBottom: '32px', textAlign: 'center' }}
         >
-          <Logo size={68} showText={false} showTagline={false} />
+          
 
           <h1
             style={{
@@ -103,8 +103,9 @@ export function DarkLoginScreen({ onLogin, onSignUp }: DarkLoginScreenProps) {
               marginBottom: '10px',
             }}
           >
-            <span style={{ color: '#F0F2F5' }}>Step</span>
-            <span style={{ color: '#00E5A0' }}>wise</span>
+            <span style={{ color: '#F0F2F5' }}>Roo</span>
+            <span style={{ color: '#2d7d46' }}>t</span>
+            <span style={{ color: '#F0F2F5' }}>ed</span>
           </h1>
 
           <p
@@ -191,7 +192,7 @@ export function DarkLoginScreen({ onLogin, onSignUp }: DarkLoginScreenProps) {
               <button
                 type="button"
                 className="text-[13px]"
-                style={{ color: '#00E5A0' }}
+                style={{ color: '#ffacac' }}
               >
                 Forgot password?
               </button>
@@ -214,7 +215,7 @@ export function DarkLoginScreen({ onLogin, onSignUp }: DarkLoginScreenProps) {
               disabled={loading}
               className="w-full py-3.5 rounded-[14px] font-bold text-[16px] mb-6 disabled:opacity-60"
               style={{
-                backgroundColor: '#00E5A0',
+                backgroundColor: '#2d7d46',
                 color: '#0D0F14',
               }}
             >
@@ -269,7 +270,7 @@ export function DarkLoginScreen({ onLogin, onSignUp }: DarkLoginScreenProps) {
             type="button"
             onClick={onSignUp}
             className="text-[14px] font-bold"
-            style={{ color: '#00E5A0' }}
+            style={{ color: '#2d7d46' }}
           >
             Sign up
           </button>
