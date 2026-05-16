@@ -1,24 +1,23 @@
-import { Home, PlusCircle, Calendar, Bell, User } from 'lucide-react';
-
+import { Home, PlusCircle, Calendar, Sprout, User } from 'lucide-react';
 interface IconTabBarProps {
-  activeTab: 'home' | 'add' | 'schedule' | 'rescue' | 'profile';
+  activeTab: 'home' | 'add' | 'schedule' | 'garden' | 'profile';
   onNavigate: (screen: string) => void;
 }
 
 export function IconTabBar({ activeTab, onNavigate }: IconTabBarProps) {
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 flex items-center justify-around h-16 max-w-[390px] mx-auto w-full"
-      style={{ backgroundColor: '#161920' }}
+      className="absolute left-1/2 -translate-x-1/2 bottom-5 w-[calc(100%-32px)] rounded-[26px] py-1.5 flex items-center justify-between" 
+      style={{ backgroundColor: 'rgba(22, 25, 32, 0.96)', border: '1px solid #242830' }}
     >
       <button
         onClick={() => onNavigate('home')}
         className="flex items-center justify-center flex-1 py-2"
       >
         <Home
-          size={24}
-          color={activeTab === 'home' ? '#00E5A0' : '#8B909A'}
-          fill={activeTab === 'home' ? '#00E5A0' : 'none'}
+          size={25}
+          color={activeTab === 'home' ? 'var(--accent-color)' : '#8B909A'}
+          fill={activeTab === 'home' ? 'var(--accent-color)' : 'none'}
         />
       </button>
       <button
@@ -26,8 +25,8 @@ export function IconTabBar({ activeTab, onNavigate }: IconTabBarProps) {
         className="flex items-center justify-center flex-1 py-2"
       >
         <PlusCircle
-          size={24}
-          color={activeTab === 'add' ? '#00E5A0' : '#8B909A'}
+          size={25}
+          color={activeTab === 'add' ? 'var(--accent-color)' : '#8B909A'}
           fill="none"
         />
       </button>
@@ -36,19 +35,19 @@ export function IconTabBar({ activeTab, onNavigate }: IconTabBarProps) {
         className="flex items-center justify-center flex-1 py-2"
       >
         <Calendar
-          size={24}
-          color={activeTab === 'schedule' ? '#00E5A0' : '#8B909A'}
-          fill={activeTab === 'schedule' ? '#00E5A0' : 'none'}
+          size={25}
+          color={activeTab === 'schedule' ? 'var(--accent-color)' : '#8B909A'}
+          fill={activeTab === 'schedule' ? 'var(--accent-color)' : 'none'}
         />
       </button>
       <button
-        onClick={() => onNavigate('rescue')}
+        onClick={() => onNavigate('garden')}
         className="flex items-center justify-center flex-1 py-2"
       >
-        <Bell
-          size={24}
-          color={activeTab === 'rescue' ? '#00E5A0' : '#8B909A'}
-          fill={activeTab === 'rescue' ? '#00E5A0' : 'none'}
+        <Sprout
+          size={26}
+          color={activeTab === 'garden' ? 'var(--accent-color)' : '#8B909A'}
+          fill={activeTab === 'garden' ? 'var(--accent-color)' : 'none'}
         />
       </button>
       <button
@@ -56,9 +55,9 @@ export function IconTabBar({ activeTab, onNavigate }: IconTabBarProps) {
         className="flex items-center justify-center flex-1 py-2"
       >
         <User
-          size={24}
-          color={activeTab === 'profile' ? '#00E5A0' : '#8B909A'}
-          fill={activeTab === 'profile' ? '#00E5A0' : 'none'}
+          size={25}
+          color={activeTab === 'profile' ? 'var(--accent-color)' : '#8B909A'}
+          fill={activeTab === 'profile' ? 'var(--accent-color)' : 'none'}
         />
       </button>
     </div>

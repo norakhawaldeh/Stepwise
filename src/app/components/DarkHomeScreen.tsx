@@ -3,7 +3,7 @@ import {
   Home,
   PlusCircle,
   Calendar,
-  Bell,
+  Sprout,
   User,
   Plus,
 } from 'lucide-react'
@@ -226,12 +226,32 @@ export function DarkHomeScreen({
         <div className="flex-1 overflow-y-auto px-5 pt-7 pb-32">
           <div className="flex items-start justify-between mb-5">
             <div>
-              <h1 className="text-[40px] font-bold leading-none" style={{ color: '#F0F2F5' }}>
-                Roo<span style={{ color: '#2d7d46' }}>t</span>ed
-              </h1>
+              <div className="relative inline-block">
+                <div
+                  className="absolute -inset-6 blur-[70px] opacity-80 rounded-full"
+                  style={{
+                    background: 'rgba(45,125,70,0.55)',
+                  }}
+                />
 
-              <p className="text-[15px] mt-3" style={{ color: '#A0A5B0' }}>
-                Welcome, {username}!
+                <h1
+                  className="mb-3 text-center"
+            style={{
+              fontFamily: '"Plus Jakarta Sans", sans-serif',
+              fontSize: '3.5rem',
+              fontWeight: 700,
+              letterSpacing: '-0.06em',
+              lineHeight: 1,
+            }}
+                >
+                  <span style={{ color: '#F5F7FA' }}>roo</span>
+                  <span style={{ color: '#A7D96C' }}>t</span>
+                  <span style={{ color: '#F5F7FA' }}>ed</span>
+                </h1>
+              </div>
+
+              <p className="text-[15px] mt-3" style={{ color: '#c0c4cc' }}>
+                <span className="italic">Welcome,</span> {username}!
               </p>
             </div>
 
@@ -248,7 +268,7 @@ export function DarkHomeScreen({
           </div>
 
           <button
-            onClick={() => onNavigate('garden')}
+            onClick={() => onNavigate('garden-collection')}
             className="w-full rounded-[22px] p-4 mb-8 flex items-center gap-4 text-left"
             style={{
               backgroundColor: '#161920',
@@ -429,8 +449,8 @@ export function DarkHomeScreen({
             <Calendar size={25} color="#8B909A" />
           </button>
 
-          <button onClick={() => onNavigate('rescue')}>
-            <Bell size={25} color="#8B909A" />
+          <button onClick={() => onNavigate('garden')}>
+            <Sprout size={25} color="#8B909A" />
           </button>
 
           <button onClick={() => onNavigate('profile')}>

@@ -1,3 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+body {
+  font-family:
+    "Plus Jakarta Sans",
+    -apple-system,
+    sans-serif;
+}
+@keyframes waterStream {
+  0% {
+    opacity: 0;
+    transform: rotate(22deg) translateY(-10px);
+  }
+
+  20% {
+    opacity: 0.75;
+  }
+
+  100% {
+    opacity: 0;
+    transform: rotate(22deg) translateY(28px);
+  }
+}
+.splash-dots {
+  opacity: 0;
+  animation: showDots 0.4s ease 2.0s forwards;
+}
+
+@keyframes showDots {
+  to {
+    opacity: 1;
+  }
+}

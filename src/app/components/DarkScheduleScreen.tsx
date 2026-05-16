@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import confetti from 'canvas-confetti'
 import {
-  Bell,
+  Sprout,
   BookOpen,
   Calendar,
   Check,
@@ -607,7 +607,7 @@ const visibleSchedule = schedule.filter((item) => {
           </button>
 
           <button onClick={() => onNavigate('garden')}>
-            <Bell size={25} color="#8B909A" />
+            <Sprout size={25} color="#8B909A" />
           </button>
 
           <button onClick={() => onNavigate('profile')}>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { DarkSplashScreen } from './components/DarkSplashScreen';
+import DarkSplashScreen from './components/DarkSplashScreen'
 import { DarkLoginScreen } from './components/DarkLoginScreen';
 import { DarkCreateAccountScreen } from './components/DarkCreateAccountScreen';
 import { DarkOnboardingScreen } from './components/DarkOnboardingScreen';
@@ -18,8 +18,9 @@ import { NotificationsScreen } from './components/NotificationsScreen'
 import { AccountSecurityScreen } from './components/AccountSecurityScreen'
 import { HelpFeedbackScreen } from './components/HelpFeedbackScreen'
 import { AboutRootedScreen } from './components/AboutRootedScreen'
+import { GardenCollectionScreen } from './components/GardenCollectionScreen'
 
-type Screen = 'splash' | 'login' | 'signup' | 'onboarding' | 'home' | 'add' | 'estimate' | 'results' | 'schedule' | 'profile' | 'rescue' | 'garden' | 'generating' | 'avatar-select' | 'appearance' | 'notifications' | 'account'| 'help'| 'about'
+type Screen = 'splash' | 'login' | 'signup' | 'onboarding' | 'home' | 'add' | 'estimate' | 'results' | 'schedule' | 'profile' | 'rescue' | 'garden' | 'generating' | 'avatar-select' | 'appearance' | 'notifications' | 'account'| 'help'| 'about'| 'garden-collection'
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('splash');
@@ -98,14 +99,7 @@ export default function App() {
     setScreen('generating')
   }
 
-  useEffect(() => {
-    if (screen === 'splash') {
-      const timer = setTimeout(() => {
-        setScreen('login');
-      }, 5500);
-      return () => clearTimeout(timer);
-    }
-  }, [screen]);
+  
 
   const handleLogin = () => {
     setScreen('home');
@@ -118,7 +112,9 @@ export default function App() {
   const handleBackToLogin = () => {
     setScreen('login');
   };
-
+const handleBackToSplash = () => {
+  setScreen('splash')
+}
   const handleCreateAccount = () => {
     setScreen('onboarding');
   };
@@ -155,12 +151,13 @@ export default function App() {
       data-theme={theme}
       data-accent={accentColor}
     >
-      {screen === 'splash' && <DarkSplashScreen />}
+      {screen === 'splash' && <DarkSplashScreen onNavigate={handleNavigate} />}
       {screen === 'login' && <DarkLoginScreen onLogin={handleLogin} onSignUp={handleSignUp} />}
       {screen === 'signup' && (
         <DarkCreateAccountScreen
           onCreateAccount={handleCreateAccount}
           onBackToLogin={handleBackToLogin}
+          onBackToSplash={handleBackToSplash}
         />
       )}
       {screen === 'onboarding' && <DarkOnboardingScreen onComplete={handleOnboardingComplete} />}
@@ -235,8 +232,10 @@ export default function App() {
       {screen === 'about' && (
         <AboutRootedScreen onNavigate={handleNavigate} />
       )}
-      {screen === 'garden' && <DarkGardenScreen onNavigate={handleNavigate} />}
-      
+      {screen === 'garden-collection' && (
+        <GardenCollectionScreen onNavigate={handleNavigate} />
+      )}
+      {screen === 'garden' && <DarkGardenScreen onNavigate={handleNavigate} />}    
     </div>
   );
 }

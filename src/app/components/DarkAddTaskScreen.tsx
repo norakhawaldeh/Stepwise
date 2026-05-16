@@ -6,7 +6,7 @@ import {
   ChevronRight,
   Home,
   PlusCircle,
-  Bell,
+  Sprout,
   User,
 } from 'lucide-react'
 
@@ -263,7 +263,7 @@ export function DarkAddTaskScreen({ onContinue, onNavigate }: DarkAddTaskScreenP
           <button onClick={() => onNavigate('home')}><Home size={24} color="#8B909A" /></button>
           <button onClick={() => onNavigate('add')}><PlusCircle size={25} color="var(--accent-color)" /></button>
           <button onClick={() => onNavigate('schedule')}><Calendar size={25} color="#8B909A" /></button>
-          <button onClick={() => onNavigate('garden')}><Bell size={25} color="#8B909A" /></button>
+          <button onClick={() => onNavigate('garden')}><Sprout size={25} color="#8B909A" /></button>
           <button onClick={() => onNavigate('profile')}><User size={25} color="#8B909A" /></button>
         </div>
       </div>

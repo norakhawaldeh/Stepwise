@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  Bell,
+  Sprout,
   Calendar,
   ChevronLeft,
   ChevronRight,
@@ -237,7 +237,7 @@ export function DarkProfileScreen({
                 onClick={() => setPage('edit-profile')}
               />
               <SettingRow
-                icon={<Bell size={22} color="var(--accent-color)" />}
+                icon={<Sprout size={22} color="var(--accent-color)" />}
                 title="Notifications"
                 subtitle="Manage reminders and alerts"
                 onClick={() => onNavigate('notifications')}
@@ -446,7 +446,7 @@ className="absolute bottom-1 -right-1 w-10 h-10 rounded-full flex items-center j
           <button onClick={() => onNavigate('home')}><Home size={24} color="#8B909A" /></button>
           <button onClick={() => onNavigate('add')}><PlusCircle size={25} color="#8B909A" /></button>
           <button onClick={() => onNavigate('schedule')}><Calendar size={25} color="#8B909A" /></button>
-          <button onClick={() => onNavigate('garden')}><Bell size={25} color="#8B909A" /></button>
+          <button onClick={() => onNavigate('garden')}><Sprout size={25} color="#8B909A" /></button>
           <button onClick={() => onNavigate('profile')}><User size={25} color="var(--accent-color)" /></button>
         </div>
     </div>
