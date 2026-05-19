@@ -61,7 +61,8 @@ export function DarkScheduleScreen({ onNavigate }: DarkScheduleScreenProps) {
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null)
   const [expandedTaskIds, setExpandedTaskIds] = useState<string[]>([])
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
-  const DAYS_TO_SHOW = 365
+const DAYS_TO_DISPLAY = 7
+const DAYS_TO_ACCESS = 365
 
   const loadSchedule = () => {
     const saved = localStorage.getItem('stepwiseSchedule')
@@ -114,9 +115,9 @@ const startDate = parsedSchedule?.startDate
   ? getDateOnly(new Date(parsedSchedule.startDate))
   : today
 
-const weekDays = Array.from({ length: DAYS_TO_SHOW }, (_, i) => {
+const weekDays = Array.from({ length: DAYS_TO_DISPLAY }, (_, i) => {
   const date = new Date(today)
-  date.setDate(today.getDate() + i)
+  date.setDate(today.getDate() + selectedDayIndex + i)
 
   return {
     date,
@@ -129,11 +130,12 @@ const weekDays = Array.from({ length: DAYS_TO_SHOW }, (_, i) => {
     }),
   }
 })
+const selectedDate = weekDays[0].date
 const todayIndex = weekDays.findIndex(
   (day) => day.date.getTime() === today.getTime()
 )
 
-  const selectedDate = weekDays[selectedDayIndex].date
+
   const getTaskDate = (dayId: string) => {
   const dayNumber = Number(dayId?.replace('day-', '') || 1)
 
@@ -262,7 +264,7 @@ const visibleSchedule = schedule.filter((item) => {
 
   const goPreviousDay = () => setSelectedDayIndex((prev) => Math.max(0, prev - 1))
   const goNextDay = () =>
-  setSelectedDayIndex((prev) => Math.min(DAYS_TO_SHOW - 1, prev + 1))
+  setSelectedDayIndex((prev) => Math.min(DAYS_TO_ACCESS - 1, prev + 1))
 
   const monthName = new Date(calendarYear, calendarMonth).toLocaleDateString('en-US', {
     month: 'long',
@@ -287,13 +289,19 @@ const visibleSchedule = schedule.filter((item) => {
       className="min-h-screen relative overflow-hidden"
       style={{
         background:
-          'radial-gradient(circle at top left, rgba(0, 229, 160, 0.08), transparent 35%), var(--bg-primary)',
+          'radial-gradient(circle at top left, rgba(124, 58, 237, 0.18), transparent 38%), #07070A',
         }}
       >
       <div className="max-w-[430px] mx-auto h-screen flex flex-col relative">
         <div className="flex-1 overflow-y-auto px-5 pt-8 pb-28">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-[30px] font-bold" style={{ color: '#F0F2F5' }}>
+            <h1
+              className="text-[34px] font-semibold tracking-[-0.04em]"
+              style={{
+                color: '#F5F5F7',
+                letterSpacing: '-0.04em',
+              }}
+            >
               Schedule
             </h1>
 
@@ -375,9 +383,10 @@ const visibleSchedule = schedule.filter((item) => {
           <div
             className="rounded-[20px] mb-4 overflow-visible"
             style={{
-              backgroundColor: 'rgba(22, 25, 32, 0.82)',
-              border: '1px solid #242830',
+              backgroundColor: 'rgba(16, 16, 22, 0.92)',
+              border: '1px solid rgba(139, 92, 246, 0.12)',
               boxShadow: '0 18px 45px rgba(0,0,0,0.22)',
+              backdropFilter: 'blur(28px)',
             }}
           >
             <div className="flex items-center justify-between px-4 py-4 border-b" style={{ borderColor: '#242830' }}>
@@ -536,8 +545,8 @@ const visibleSchedule = schedule.filter((item) => {
             onClick={() => setShowDueSheet(true)}
             className="w-full rounded-[20px] p-4 mb-4 flex items-center justify-between"
             style={{
-              backgroundColor: 'rgba(22, 25, 32, 0.82)',
-              border: '1px solid #242830',
+              backgroundColor: 'rgba(16, 16, 22, 0.92)',
+border: '1px solid rgba(139, 92, 246, 0.12)',
             }}
           >
             <div className="flex items-center gap-4">
@@ -561,8 +570,8 @@ const visibleSchedule = schedule.filter((item) => {
           <div
             className="rounded-[22px] p-5 flex items-center gap-4"
             style={{
-              backgroundColor: 'rgba(22, 25, 32, 0.82)',
-              border: '1px solid #242830',
+              backgroundColor: 'rgba(16, 16, 22, 0.92)',
+border: '1px solid rgba(139, 92, 246, 0.12)',
             }}
           >
             <div
@@ -588,7 +597,7 @@ const visibleSchedule = schedule.filter((item) => {
         <div
           className="absolute left-1/2 -translate-x-1/2 bottom-5 w-[calc(100%-32px)] rounded-[26px] px-5 py-3.5 flex items-center justify-between"
           style={{
-            backgroundColor: 'rgba(22, 25, 32, 0.96)',
+            backgroundColor: 'rgba(10, 10, 14, 0.82)',
             border: '1px solid #242830',
             boxShadow: '0 18px 45px rgba(0,0,0,0.45)',
             backdropFilter: 'blur(14px)',
@@ -956,29 +965,26 @@ const visibleSchedule = schedule.filter((item) => {
 
       <div className="flex gap-3">
         <button
-          onClick={() => setShowDeleteModal(false)}
-          className="flex-1 py-3 rounded-[16px]"
-          style={{
-            backgroundColor: '#20242D',
-            color: '#F0F2F5',
-          }}
-        >
-          Cancel
-        </button>
+  onClick={() => {
+    localStorage.removeItem('stepwiseSchedule')
+    localStorage.removeItem('stepwiseDraftTask')
 
-        <button
-          onClick={() => {
-            // DELETE LOGIC HERE
-            setShowDeleteModal(false)
-          }}
-          className="flex-1 py-3 rounded-[16px]"
-          style={{
-            backgroundColor: '#FF453A',
-            color: 'white',
-          }}
-        >
-          Delete
-        </button>
+    setSchedule([])
+
+    setShowDeleteModal(false)
+    setShowAssignmentDetails(false)
+    setShowDueSheet(false)
+
+    onNavigate('home')
+  }}
+  className="flex-1 py-3 rounded-[16px]"
+  style={{
+    backgroundColor: '#FF453A',
+    color: 'white',
+  }}
+>
+  Delete
+</button>
       </div>
     </div>
   </div>
@@ -1050,7 +1056,7 @@ const visibleSchedule = schedule.filter((item) => {
                       (1000 * 60 * 60 * 24)
                   )
 
-                  const isInVisibleWeek = dayIndexFromToday >= 0 && dayIndexFromToday < DAYS_TO_SHOW
+                  const isInVisibleWeek = dayIndexFromToday >= 0 && dayIndexFromToday < DAYS_TO_ACCESS
                   const hasTasks = schedule.some((task) => task.dayId === `day-${dayIndexFromToday + 1}`)
 
                   return (

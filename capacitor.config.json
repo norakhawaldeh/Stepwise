@@ -1,5 +1,9 @@
 {
   "appId": "com.stepwise.app",
   "appName": "Stepwise",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "url": "http://192.168.12.49:5173",
+    "cleartext": true
+  }
 }

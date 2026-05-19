@@ -1,166 +1,150 @@
 import { useState } from 'react'
-import {
-  CheckCircle2,
-  Droplet,
-  Sprout,
-  CalendarCheck,
-  WandSparkles,
-  ArrowRight,
-  Flower2,
-} from 'lucide-react'
 
 interface DarkOnboardingScreenProps {
   onComplete: () => void
 }
 
-const accent = '#2D7D46'
-
 const slides = [
   {
-    title: 'Welcome to Rooted',
-    subtitle: 'Turn overwhelming deadlines into calm, doable steps.',
-    icon: Sprout,
-    accent: 'Rooted helps you start small, stay consistent, and build momentum without spiraling.',
-    bullets: [
-      { icon: WandSparkles, title: 'Break it down', text: 'Add a task and Rooted turns it into clear steps.' },
-      { icon: CalendarCheck, title: 'Know what to do', text: 'See exactly what needs your attention today.' },
-      { icon: Sprout, title: 'Grow with progress', text: 'Every completed task helps your garden grow.' },
-    ],
+    label: 'AI BREAKDOWN',
+    title: 'Big tasks,\ntiny steps.',
+    subtitle:
+      'Drop in an exam or essay. Rooted plans realistic daily steps so you always know what is next.',
+    cta: 'Continue',
   },
   {
-    title: 'Add any assignment',
-    subtitle: 'Paste instructions, type a quick note, or describe what you need done.',
-    icon: WandSparkles,
-    accent: 'No perfect setup needed. Just add the task and Rooted helps organize the rest.',
-    bullets: [
-      { icon: CheckCircle2, title: 'Essays', text: 'Split writing into outline, draft, edits, and final review.' },
-      { icon: CheckCircle2, title: 'Exams', text: 'Turn studying into focused sessions across multiple days.' },
-      { icon: CheckCircle2, title: 'Projects', text: 'Preview your plan before adding it to your schedule.' },
-    ],
+    label: 'YOUR GARDEN',
+    title: 'Finish a task,\ngrow a plant.',
+    subtitle:
+      'Every completed task feeds your garden. Unlock new plants as your streak grows.',
+    cta: 'Continue',
   },
   {
-    title: 'Follow your schedule',
-    subtitle: 'Your plan becomes a simple daily timeline you can actually follow.',
-    icon: CalendarCheck,
-    accent: 'Instead of wondering where to start, Rooted shows your next doable step.',
-    bullets: [
-      { icon: CheckCircle2, title: 'Today’s tasks', text: 'Focus only on what matters right now.' },
-      { icon: CheckCircle2, title: 'Mark progress', text: 'Check off tasks as you complete them.' },
-      { icon: CheckCircle2, title: 'Stay flexible', text: 'Use Rescue Mode when you fall behind.' },
-    ],
-  },
-  {
-    title: 'Grow your garden',
-    subtitle: 'Your completed tasks become visible progress.',
-    icon: Flower2,
-    accent: 'Complete tasks, fill your bucket, water your plant, and unlock new plants over time.',
-    bullets: [
-      { icon: Droplet, title: 'Fill the bucket', text: 'Each completed task adds water.' },
-      { icon: Sprout, title: 'Water your plant', text: 'When the bucket is full, pour to grow.' },
-      { icon: Flower2, title: 'Unlock plants', text: 'Build a garden that reflects your consistency.' },
-    ],
+    label: 'RESCUE MODE',
+    title: 'Missed a day?\nNo spiral.',
+    subtitle:
+      'One tap reshuffles your week. Falling behind never feels permanent again.',
+    cta: 'Plant my first seed',
   },
 ]
 
 export function DarkOnboardingScreen({ onComplete }: DarkOnboardingScreenProps) {
   const [slideIndex, setSlideIndex] = useState(0)
   const slide = slides[slideIndex]
-  const MainIcon = slide.icon
   const isLast = slideIndex === slides.length - 1
+  const isFirst = slideIndex === 0
 
   const handleNext = () => {
     if (isLast) onComplete()
-    else setSlideIndex(slideIndex + 1)
+    else setSlideIndex((i) => i + 1)
+  }
+
+  const handleBack = () => {
+    if (!isFirst) setSlideIndex((i) => i - 1)
   }
 
   return (
     <div
-      className="min-h-screen relative overflow-hidden"
+      className="fixed inset-0 flex flex-col"
       style={{
         background:
-          'radial-gradient(circle at top left, rgba(45,125,70,0.16), transparent 36%), #0D0F14',
+          'radial-gradient(ellipse 110% 60% at 50% 30%, rgba(80,35,180,0.55) 0%, rgba(30,12,70,0.6) 45%, #08071A 70%), #08071A',
         fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif',
       }}
     >
-      <div className="max-w-[430px] mx-auto h-screen flex flex-col px-6 pt-8 pb-8 overflow-y-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex gap-2">
-            {slides.map((_, index) => (
+      {/* Google Font for display serif */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap');
+        .onboard-heading {
+          font-family: 'DM Serif Display', 'Georgia', serif;
+          font-weight: 400;
+          font-size: clamp(48px, 11vw, 64px);
+          line-height: 1.08;
+          letter-spacing: -0.5px;
+          color: #FFFFFF;
+          white-space: pre-line;
+        }
+      `}</style>
+
+      <div className="max-w-[430px] w-full mx-auto flex flex-col h-full px-7 pt-10 pb-10">
+
+        {/* ── TOP BAR ── */}
+        <div className="flex items-center justify-between mb-10">
+          {/* Back */}
+          <button
+            onClick={handleBack}
+            className="text-[15px] font-medium transition-opacity"
+            style={{ color: '#9490B8', opacity: isFirst ? 0 : 1, pointerEvents: isFirst ? 'none' : 'auto' }}
+          >
+            Back
+          </button>
+
+          {/* Progress pills */}
+          <div className="flex items-center gap-2">
+            {slides.map((_, i) => (
               <div
-                key={index}
-                className="h-2 rounded-full transition-all duration-300"
+                key={i}
+                className="h-[3px] rounded-full transition-all duration-400"
                 style={{
-                  width: index === slideIndex ? '34px' : '10px',
-                  backgroundColor: index === slideIndex ? accent : '#242830',
+                  width: i === slideIndex ? '44px' : '28px',
+                  backgroundColor:
+                    i === slideIndex
+                      ? '#8B5CF6'
+                      : i < slideIndex
+                      ? 'rgba(139,92,246,0.35)'
+                      : 'rgba(255,255,255,0.12)',
+                  boxShadow: i === slideIndex ? '0 0 8px rgba(139,92,246,0.7)' : 'none',
                 }}
               />
             ))}
           </div>
 
-          <button onClick={onComplete} className="text-[14px] font-medium" style={{ color: '#A0A5B0' }}>
+          {/* Skip */}
+          <button
+            onClick={onComplete}
+            className="text-[15px] font-medium"
+            style={{ color: '#9490B8' }}
+          >
             Skip
           </button>
         </div>
 
-        <div className="flex-1 flex flex-col">
-          <div className="text-center mb-7">
-            <div
-              className="w-20 h-20 rounded-[26px] mx-auto mb-5 flex items-center justify-center"
-              style={{
-                backgroundColor: 'rgba(45,125,70,0.16)',
-                boxShadow: '0 0 34px rgba(45,125,70,0.20)',
-              }}
-            >
-              <MainIcon size={38} color={accent} />
-            </div>
+        {/* ── CONTENT AREA ── */}
+        <div className="flex-1 flex flex-col justify-center pb-8">
+          {/* Label */}
+          <p
+            className="text-[11px] font-bold tracking-[0.22em] mb-6"
+            style={{ color: 'rgba(139,92,246,0.75)' }}
+          >
+            {slide.label}
+          </p>
 
-            <h1 className="text-[32px] font-extrabold tracking-[-1px] leading-tight mb-3" style={{ color: '#F0F2F5' }}>
-              {slide.title}
-            </h1>
+          {/* Heading */}
+          <h1 className="onboard-heading mb-6">
+            {slide.title}
+          </h1>
 
-            <p className="text-[15px] leading-6 mx-auto max-w-[330px]" style={{ color: '#A0A5B0' }}>
-              {slide.subtitle}
-            </p>
-          </div>
-
-           
-
-          
-
-          <div className="space-y-3">
-            {slide.bullets.slice(0, 2).map((item) => {
-              const Icon = item.icon
-              return (
-                <div key={item.title} className="flex items-center gap-4">
-                  <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: 'rgba(45,125,70,0.14)' }}>
-                    <Icon size={21} color={accent} />
-                  </div>
-
-                  <div>
-                    <h3 className="text-[15px] font-bold" style={{ color: '#F0F2F5' }}>
-                      {item.title}
-                    </h3>
-                    <p className="text-[13px]" style={{ color: '#A0A5B0' }}>
-                      {item.text}
-                    </p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+          {/* Subtitle */}
+          <p
+            className="text-[16px] leading-[1.65] max-w-[320px]"
+            style={{ color: 'rgba(200,195,230,0.7)' }}
+          >
+            {slide.subtitle}
+          </p>
         </div>
 
+        {/* ── CONTINUE BUTTON ── */}
         <button
           onClick={handleNext}
-          className="w-full py-4 rounded-[20px] font-bold text-[16px] flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+          className="w-full h-[62px] rounded-[20px] text-[16px] font-semibold flex items-center justify-center active:scale-[0.98] transition-transform"
           style={{
-            backgroundColor: accent,
+            background: 'rgba(139,92,246,0.12)',
+            border: '1.5px solid rgba(139,92,246,0.35)',
             color: '#FFFFFF',
-            boxShadow: '0 14px 35px rgba(45,125,70,0.28)',
+            boxShadow: '0 0 24px rgba(100,50,220,0.18)',
           }}
         >
-          {isLast ? "Let's start" : 'Next'}
-          <ArrowRight size={20} />
+          {slide.cta}
         </button>
       </div>
     </div>

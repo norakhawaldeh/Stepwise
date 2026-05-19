@@ -51,8 +51,13 @@ export function DarkCreateAccountScreen({
       return
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
+   const passwordRegex =
+      /^(?=.*[A-Z])(?=.*[\d\W]).{8,}$/
+
+    if (!passwordRegex.test(password)) {
+      setError(
+        'Password must be at least 8 characters and include a capital letter and number or symbol.'
+      )
       return
     }
 
@@ -234,7 +239,7 @@ export function DarkCreateAccountScreen({
                   style={{ backgroundColor: accent, opacity: 0.45 }}
                 />
                 <p className="text-[12px]" style={{ color: '#625989' }}>
-                  Use 8+ characters with a mix of letters, numbers &amp; symbols
+                  Use 8+ characters, 1 capital letter, and 1 number or symbol
                 </p>
               </div>
             </div>
